@@ -13,7 +13,10 @@ import {
 } from "reactstrap";
 import "../styles/dashboard.css";
 import { Alert } from "reactstrap";
-import { FaEye } from "react-icons/fa";
+import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
+import SweetAlert2 from "react-sweetalert2";
+import axios from "axios";
+import { API_URL, getUserDetails } from "../helpers/constants";
 
 const Dashboard = () => {
   const [alertConfig, setAlertConfig] = useState({
@@ -21,66 +24,45 @@ const Dashboard = () => {
     isOpen: false,
     message: "",
   });
-  const [diares, setDiares] = useState([
-    {
-      user_id: "123",
-      _id: "1",
-      name: "My Diary",
-      caption: "My diary caption",
-      year: "2023",
-    },
-    {
-      user_id: "123",
-      _id: "2",
-      name: "My Diary123",
-      caption: "My diary caption",
-      year: "2024",
-    },
-    {
-      user_id: "123",
-      _id: "3",
-      name: "My Diary456",
-      caption: "My diary caption",
-      year: "2025",
-    },
-    {
-      user_id: "123",
-      _id: "4",
-      name: "My Diary789",
-      caption: "My diary caption",
-      year: "2025",
-    },
-    {
-      user_id: "123",
-      _id: "5",
-      name: "My Diary901",
-      caption: "My diary caption",
-      year: "2025",
-    },
-  ]);
+
+  const [alertProps, setAlertProps] = useState({
+    show: false,
+    title: "",
+    text: "",
+  });
+  const [diares, setDiares] = useState([]);
 
   const [newDiary, setNewDiary] = useState({});
   const [modal, setModal] = useState(false);
+  const [count, setCount] = useState(5);
   const toggle = () => setModal(!modal);
   const [selectedDiary, setSelectedDiary] = useState({});
   const mouseHoverEffect = (item) => {
-    console.log("item: ", item);
     setSelectedDiary(item);
   };
 
-  // useEffect(() => {}, [selectedDiary]);
+  const getDiaries = () => {
+    const user = getUserDetails();
+    if (user?._id) {
+      axios.get(`${API_URL}/diary/${user?._id}`).then((res) => {
+        console.log("res: ", res.data);
+        setDiares(res.data);
+      });
+    }
+  };
+
+  useEffect(() => {
+    getDiaries();
+  }, []);
 
   const changeHandler = (e) => {
     setNewDiary({
       ...newDiary,
-      _id: diares.length + 1,
-      user_id: "123",
       [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = () => {
-    console.log("newDiary", newDiary);
     let filteredData = diares.filter((v) => v.year == newDiary.year);
     console.log("filteredData: ", filteredData.length);
     if (filteredData.length > 0) {
@@ -90,17 +72,52 @@ const Dashboard = () => {
       });
       toggle();
     } else {
-      setDiares([...diares, newDiary]);
-      toggle();
+      // setDiares([...diares, newDiary]);
+      const user = getUserDetails();
+      let payload = { ...newDiary, user_id: user?._id };
+
+      console.log("payload: ", payload);
+      axios.post(`${API_URL}/diary/add-diary`, payload).then((res) => {
+        setDiares([...diares, res.data]);
+        console.log("res: ", res);
+        toggle();
+      });
     }
   };
+
+  const handleDelete = () => {
+    console.log(selectedDiary?._id);
+    axios
+      .delete(`${API_URL}/diary/delete/${selectedDiary?._id}`)
+      .then((res) => {
+        console.log("res: ", res);
+        getDiaries();
+      });
+  };
+
+  useEffect(() => {
+    if (alertConfig.isOpen) {
+      let count = 5;
+      setInterval(() => {
+        count = count - 1;
+        if (count === 0) {
+          console.log("count: ", count);
+          setAlertConfig({
+            color: "",
+            isOpen: false,
+            message: "",
+          });
+        }
+      }, 1000);
+    }
+  }, [alertConfig]);
 
   return (
     <Row>
       <Col xs={12}>
         <Card className="border-0 bg-transparent">
           <CardHeader className="border-0 bg-transparent d-flex justify-content-end">
-            <Button color="success" onClick={toggle}>
+            <Button color="primary" onClick={toggle}>
               Add New Diary
             </Button>
           </CardHeader>
@@ -170,20 +187,33 @@ const Dashboard = () => {
             </Modal>
           }
 
-          <Alert
-            color="danger"
-            isOpen={alertConfig.isOpen}
-            toggle={() =>
-              setAlertConfig({ ...alertConfig, isOpen: !alertConfig.isOpen })
-            }
-          >
-            {alertConfig.message}
-          </Alert>
+          {alertConfig.isOpen && (
+            <Alert
+              color="danger"
+              isOpen={alertConfig.isOpen}
+              toggle={() =>
+                setAlertConfig({ ...alertConfig, isOpen: !alertConfig.isOpen })
+              }
+            >
+              {alertConfig.message}
+            </Alert>
+          )}
+          <SweetAlert2
+            {...alertProps}
+            onResolve={() => {
+              setAlertProps({
+                show: false,
+                title: "",
+                text: "",
+              });
+            }}
+            onConfirm={handleDelete}
+          />
           <CardBody className="border-0 bg-transparent">
             <Row>
               {diares.length > 0 ? (
                 diares.map((diary) => (
-                  <Col xs={12} md={3} className="mb-3" key={diary?._id}>
+                  <Col xs={12} md={3} sm={6} className="mb-3" key={diary?._id}>
                     <Card
                       className="diary-card"
                       // onMouseOver={(e) => mouseHoverEffect(diary)}
@@ -196,18 +226,43 @@ const Dashboard = () => {
                           <small>{diary.caption}</small>
                         </div>
                       </CardBody>
-                      <a
-                        href={`/diary/${diary._id}`}
-                        style={{ color: "#fff", textDecoration: "none" }}
+                      <div
+                        className={`${
+                          selectedDiary?._id === diary?._id ? "active" : ""
+                        } hover d-flex justify-content-center align-items-center`}
                       >
-                        <div
-                          className={`${
-                            selectedDiary?._id === diary?._id ? "active" : ""
-                          } hover d-flex justify-content-center align-items-center`}
-                        >
-                          <FaEye />
-                        </div>
-                      </a>
+                        <Row className="hide">
+                          <Col xs={3}>
+                            <a
+                              href={`/diary/${diary._id}`}
+                              style={{ color: "#fff", textDecoration: "none" }}
+                            >
+                              <FaEye />
+                            </a>
+                          </Col>
+                          <Col xs={3}>
+                            <FaEdit style={{ cursor: "pointer" }}></FaEdit>
+                          </Col>
+                          <Col xs={3}>
+                            <FaTrash
+                              style={{ cursor: "pointer" }}
+                              onClick={() => {
+                                console.log("clicked");
+                                setAlertProps({
+                                  icon: "error",
+                                  show: true,
+                                  title: "Are you sure you want to delete",
+                                  text: "Deleting your thoughts will never be a reversible process",
+                                  showCloseButton: true,
+                                  confirmButtonText: "Yes",
+                                  confirmButtonColor: "#198754",
+                                  showCancelButton: true,
+                                });
+                              }}
+                            />
+                          </Col>
+                        </Row>
+                      </div>
                     </Card>
                   </Col>
                 ))

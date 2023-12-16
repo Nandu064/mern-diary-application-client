@@ -1,6 +1,34 @@
-import React from "react";
+import axios from "axios";
+import React, { useState, useEffect, useContext } from "react";
+import { API_URL, isLoggedIn } from "../helpers/constants";
+import { AuthState } from "../context/AuthState";
 
 const Login = () => {
+  const [formDetails, setFormDetails] = useState({});
+  const { isLogggedIn, setIsLogggedIn, setUserDetails, userDetails } =
+    useContext(AuthState);
+
+  const handelsubmit = (e) => {
+    e.preventDefault();
+    let payload = {
+      ...formDetails,
+    };
+    axios.post(`${API_URL}/user/login`, payload).then((res) => {
+      console.log("res: ", res);
+      if (Object.keys(res.data).length > 0) {
+        localStorage.setItem("user", JSON.stringify(res.data));
+        localStorage.setItem("isLoggedIn", true);
+        setIsLogggedIn(true);
+        setUserDetails(res.data);
+        window.location = "/dashboard";
+      }
+    });
+    // console.log("formDetails: ", formDetails);
+  };
+  const handleChange = (e) => {
+    setFormDetails({ ...formDetails, [e.target.name]: e.target.value });
+  };
+
   return (
     <div className="container form_container">
       <div className="form-box">
@@ -44,13 +72,15 @@ const Login = () => {
                       </svg>
                     </span>
                     <input
-                      type="email"
+                      required
+                      onChange={handleChange}
+                      type="text"
                       className="form-control"
                       aria-label="Sizing example input"
                       aria-describedby="inputGroup-sizing-sm"
-                      placeholder="Email"
-                      name="email"
-                      id="email"
+                      placeholder="Email or Username"
+                      name="username"
+                      id="username"
                     />
                   </div>
                   <div className="input-group input-group-sm mb-3 form-field">
@@ -71,6 +101,8 @@ const Login = () => {
                       </svg>
                     </span>
                     <input
+                      required
+                      onChange={handleChange}
                       type="password"
                       className="form-control"
                       aria-label="Sizing example input"
@@ -86,7 +118,11 @@ const Login = () => {
                       click here!
                     </a>
                   </p>
-                  <button type="submit" className="sign_up">
+                  <button
+                    type="submit"
+                    className="sign_up"
+                    onClick={handelsubmit}
+                  >
                     Login
                   </button>
                 </div>

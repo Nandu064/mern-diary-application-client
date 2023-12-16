@@ -17,5 +17,13 @@
     /* display: block; */
     position: absolute;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.5);
+}
+.hide{
+    display: none;
+    color: #fff;
+}
+.diary-card .active > .hide{
+    display: flex;
+    justify-content: center;
 }

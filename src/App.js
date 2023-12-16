@@ -17,7 +17,16 @@ import SingleDiaryView from "./components/SingleDiaryView";
 // import AuthContextProvider from "./context/AuthContext";
 
 function App() {
-  const context = useContext(AuthState);
+  // const {is} = useContext(AuthState);
+
+  useEffect(() => {
+    const isLoggedIn = JSON.parse(localStorage.getItem("isLoggedIn"));
+    const route = window.location.pathname;
+    if (!isLoggedIn && !["/register", "/login"].includes(route)) {
+      window.location = "/login";
+    }
+    console.log = () => {};
+  }, []);
 
   return (
     // <AuthContextProvider>
@@ -32,9 +41,10 @@ function App() {
         <Col xs={12} className="content">
           <BrowserRouter>
             <Routes>
+              {}
               <Route exact path="/diary" element={<Diary />} />
               <Route exact path="/dashboard" element={<Dashboard />} />
-              <Route exact path="/add-page" element={<Page />} />
+              <Route exact path="/:diary_id/add-page" element={<Page />} />
               <Route exact path="/diary/:id" element={<SingleDiaryView />} />
               <Route exact path="/register" element={<Register />} />
               <Route exact path="/login" element={<Login />} />
