@@ -1,0 +1,9 @@
+
+
+.footer{
+    position: fixed;
+    bottom: 0;
+    background: #cecece;
+    min-height: 50px;
+    padding: 10px;
+}

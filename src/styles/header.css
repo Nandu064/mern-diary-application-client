@@ -1,0 +1,19 @@
+.header{
+    background: #601E69;
+    color: #fff;
+    padding:30px 15px;
+    /* position: fixed;
+    top: 0;
+    width: 100%; */
+}
+.header a{
+    color: #fff;
+    text-decoration: none;
+    transition: all .3s;
+
+}
+.link:hover{
+    color: #F6EFE8;
+    transform: scale(1.05);
+    text-decoration: underline;
+}

@@ -1,0 +1,121 @@
+
+.container {
+    width: 100%;
+    height: 85vh;
+    position: relative;
+    padding: 20px;
+    max-width: 700px !important;
+}
+
+.form_container {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    /* box-shadow: ; */
+}
+
+.form_container .form-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(8.3px);
+    -webkit-backdrop-filter: blur(8.3px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+    .orm_container .form-box {
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+    }
+  } */
+
+.form-field input {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    height: 40px;
+    outline: 0;
+    padding: 18px 15px;
+
+}
+
+.form-field input:focus {
+    border: 0;
+    box-shadow: none;
+    border-color: inherit;
+    background: transparent;
+
+
+}
+
+.input-group-text {
+    border: 0 !important;
+    background: transparent !important;
+    /* box-shadow: none; */
+}
+
+/* .forgot_text {} */
+
+.content_left {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* height: 100%; */
+    /* width: 100%; */
+    padding: 20px;
+}
+
+.right_content {
+
+    padding: 20px;
+}
+
+/* .content_left::after{
+    content: "";
+    height: 90%;
+    width: 1px;
+    background: #ccc;
+} */
+
+.signUpHeading {
+    font-size: 20px;
+    color: #601E69;
+    text-align: center;
+}
+
+.create_account {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    padding: 10px 5px;
+    color: #601E69;
+    text-decoration: none;
+    cursor: pointer;
+
+}
+
+.click_here {
+    color: #601E69;
+}
+
+.welcome_text {
+    font-size: 24px;
+    text-align: center;
+    /* text-shadow: #601E69; */
+}
+
+.sign_up {
+    width: 100%;
+    height: 40px;
+    border-radius: 30px;
+    border-top-left-radius: 30px !important;
+    border-bottom-left-radius: 30px !important;
+    background: #601E69;
+    border: 0;
+    outline: 0;
+    color: #fff;
+}
